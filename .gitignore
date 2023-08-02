@@ -1,0 +1,12 @@
+nimcache/
+nimblecache/
+htmldocs/
+bin/
+
+*
+!/**/
+!*.*
+
+*.elf
+*.exe
+*.out

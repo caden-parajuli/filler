@@ -10,3 +10,5 @@ bin/
 *.elf
 *.exe
 *.out
+
+tailwindcss

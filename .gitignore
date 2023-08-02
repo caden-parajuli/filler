@@ -2,6 +2,7 @@ nimcache/
 nimblecache/
 htmldocs/
 bin/
+tmp/
 
 *
 !/**/

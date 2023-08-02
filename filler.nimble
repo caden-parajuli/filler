@@ -5,7 +5,7 @@ author        = "Caden Parajuli"
 description   = "testDescription"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["filler_server"]
+bin           = @["server/web_socket_server.nim"]
 
 
 # Dependencies

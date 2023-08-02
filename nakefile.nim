@@ -13,9 +13,9 @@ proc `&`[T: openArray[string]](arr: T, str: string): T =
     result[i] = arr[i] & str
 
 const
-  src = "src"
-  tmp = "tmp"
-  bin = "bin"
+  srcDir = "src"
+  tmpDir = "tmp"
+  binDir = "bin"
   defaultFlags = "--threads:on --mm:orc"
   releaseFlags = "-d:release"
   debugFlags = ""
@@ -24,18 +24,20 @@ const
   tailwindReleaseFlags = "--minify"
 
 let
-  files: array[string] = ["server/web_socket_server"]
-  cssFiles: array[string] = []
-  nimJSFiles: array[string] = ["server/index"]
-  htmlFiles: array[string] = ["server/index"]
-  karaxFiles: array[string] = ["server/index"]
+  files = ["server/web_socket_server"]
+  htmlFiles = [""]
+  cssFiles = [""]
+  karaxFiles = ["server/filler"]
+  nimJSFiles = ["server/filler"]
 
 proc src(file: string, ext: string = ""): string {.inline.} =
-  result = src / (file & ext)
-proc bin(file: string, ext: string = "")): string {.inline.} =
-  result = bin / (file & ext)
-proc tmp(file: string, ext: string = "")): string {.inline.} =
-  result = tmp / (file & ext)
+  result = srcDir / (file & ext)
+  
+proc bin(file: string, ext: string = ""): string {.inline.} =
+  result = binDir / (file & ext)
+
+proc tmp(file: string, ext: string = ""): string {.inline.} =
+  result = tmpDir / (file & ext)
 
 template genericBuild(debug: bool = true) =
   var
@@ -49,31 +51,32 @@ template genericBuild(debug: bool = true) =
     tailwindFlags = tailwindReleaseFlags
 
   for file in karaxFiles:
+    createDir(file.tmp.parentDir)
     createDir(file.bin.parentDir)
-    createDir(file.bin.parentDir)
-    if needsRefresh*(file.tmp, file.src(".nim"))):
-      discard shell(nimExe, "c", defaultFlags, flags, file.src(".nim"), "-o:" & file.tmp)
-      discard shell(file.tmp, ">", file.bin(".html"))
+    if file != "" and needsRefresh(file.tmp, file.src(".nim")):
+      discard direShell(nimExe, "c", defaultFlags, flags, "-o:" & file.tmp, file.src(".nim"))
+    if needsRefresh(file.bin(".html"), file.tmp):
+      discard direShell(file.tmp, ">", file.bin(".html"))
 
   for file in htmlFiles:
     createDir(file.bin.parentDir)
-    if needsRefresh*(file.bin(".html"), file.src(".html")):
-      discard copyFile(file.src(".html"), file.bin(".html"))
+    if file != "" and needsRefresh(file.bin(".html"), file.src(".html")):
+      copyFile(file.src(".html"), file.bin(".html"))
     
   for file in files:
     createDir(file.bin.parentDir)
-    if needsRefresh*(file.bin, file.src(".nim"))):
-      discard shell(nimExe, "c", defaultFlags, flags, file.src(".nim"), "-o:" & file.bin)
+    if file != "" and needsRefresh(file.bin, file.src(".nim")):
+      discard direShell(nimExe, "c", defaultFlags, flags, "-o:" & file.bin, file.src(".nim"))
   
   for file in cssFiles:
     createDir(file.bin.parentDir)
-    if needsRefresh*(file.bin, file.src(".css")):
-      discard shell(tailwindExe, "-i", file.src(".css"), "-o" & file.bin, tailwindFlags)
+    if file != "" and needsRefresh(file.bin, file.src(".css")):
+      discard direShell(tailwindExe, "-i", file.src(".css"), "-o" & file.bin, tailwindFlags)
 
   for file in nimJSFiles:
     createDir(file.bin.parentDir)
-    if needsRefresh*(file.bin(".js"), file.src(".nim"):
-      discard shell(nimExe, "c", file.src(".nim"), "-o:" & file.bin("js"))
+    if file != "" and needsRefresh(file.bin(".js"), file.src(".nim")):
+      discard direShell(nimExe, "js", "-o:" & file.bin(".js"), file.src(".nim"))
 
 
 task "release-build", "Builds everything with release flags":
@@ -87,6 +90,10 @@ task "debug-build", "Builds everything with debug flags":
   
 task "build", "Runs debug-build":
   runTask("debug-build")
+
+task "clean", "Deletes bin and tmp folders":
+  removeDir(tmpDir)
+  removeDir(binDir)
   
 task defaultTask, "Default task, runs debug build":
   runTask("debug-build")

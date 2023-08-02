@@ -11,3 +11,7 @@ bin           = @["server/web_socket_server.nim"]
 # Dependencies
 
 requires "nim >= 1.6.12"
+requires "nake"
+requires "mummy"
+requires "jswebsockets"
+requires "karax"

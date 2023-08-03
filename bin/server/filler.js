@@ -681,6 +681,67 @@ framePtr = F.prev;
 var F = {procname: "module dom", prev: framePtr, filename: "/home/caden/.choosenim/toolchains/nim-1.6.12/lib/js/dom.nim", line: 0};
 framePtr = F;
 framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+var F = {procname: "module jswebsockets", prev: framePtr, filename: "/home/caden/.nimble/pkgs2/jswebsockets-0.1.3-582a3920c20a7b105d7f307633be7b93ee855ae3/jswebsockets.nim", line: 0};
+framePtr = F;
+framePtr = F.prev;
+
+function hide_452984836(element_452984837) {
+  var F = {procname: "filler.hide", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
+  framePtr = F;
+    F.line = 30;
+    element_452984837.style.display = "none";
+  framePtr = F.prev;
+
+  
+}
 
 function newSeq_33556825(len_33556827) {
   var result_33556828 = [];
@@ -695,18 +756,77 @@ function newSeq_33556825(len_33556827) {
 }
 
 function joinGame() {
+    
+function HEX3Aanonymous_452984843(e_452984844) {
+      var F = {procname: "joinGame.:anonymous", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
+      framePtr = F;
+        F.line = 45;
+        rawEcho(makeNimstrLit("sent: Client opened"));
+        F.line = 46;
+        socket_452984842.send("Client opened");
+      framePtr = F.prev;
+
+      
+    }
+    
+function HEX3Aanonymous_452984845(e_452984846) {
+      var F = {procname: "joinGame.:anonymous", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
+      framePtr = F;
+        F.line = 49;
+        rawEcho(makeNimstrLit("received: "), cstrToNimstr(e_452984846.data));
+        F.line = 50;
+        socket_452984842.close(1000, "received msg");
+      framePtr = F.prev;
+
+      
+    }
+    
+function HEX3Aanonymous_452984870(e_452984871) {
+      var F = {procname: "joinGame.:anonymous", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
+      framePtr = F;
+        F.line = 53;
+        rawEcho(makeNimstrLit("closing: "), cstrToNimstr(e_452984871.reason));
+      framePtr = F.prev;
+
+      
+    }
+
+  var result_452984841 = false;
+
   var F = {procname: "filler.joinGame", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
   framePtr = F;
-    F.line = 26;
-    var name_452984835 = document.getElementById("nameInput").value;
-    F.line = 27;
-    rawEcho((makeNimstrLit("Name: ") || []).concat(cstrToNimstr(name_452984835) || []));
+  BeforeRet: do {
+    F.line = 36;
+    name_452984835[0] = document.getElementById("nameInput").value;
+    F.line = 37;
+    document.getElementById("joinForm").reset();
+    F.line = 38;
+    hide_452984836(document.getElementById("joinGameDiv"));
+    F.line = 39;
+    rawEcho((makeNimstrLit("Name: ") || []).concat(cstrToNimstr(name_452984835[0]) || []));
+    F.line = 40;
+    rawEcho((makeNimstrLit("Opening socket at ws://") || []).concat(cstrToNimstr(window.location.host) || [],makeNimstrLit("/ws") || []));
+    F.line = 42;
+    var socket_452984842 = new WebSocket(toJSStr((makeNimstrLit("ws://") || []).concat(cstrToNimstr(window.location.host) || [],makeNimstrLit("/ws") || [])));
+    F.line = 44;
+    socket_452984842.onopen = HEX3Aanonymous_452984843;
+    F.line = 48;
+    socket_452984842.onmessage = HEX3Aanonymous_452984845;
+    F.line = 52;
+    socket_452984842.onclose = HEX3Aanonymous_452984870;
+    F.line = 54;
+    result_452984841 = false;
+    break BeforeRet;
+  } while (false);
   framePtr = F.prev;
 
-  
+  return result_452984841;
+
 }
 var F = {procname: "module filler", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
 framePtr = F;
+F.line = 27;
+var name_452984835 = ["Name"];
 framePtr = F.prev;
 var F = {procname: "module filler", prev: framePtr, filename: "/home/caden/Desktop/stuff/projects/games/filler/src/server/filler.nim", line: 0};
 framePtr = F;

@@ -1,5 +1,5 @@
 import nake
-import std/[strutils, os]
+import std/[strutils, os, terminal]
 
 proc `/`[T: openArray[string]](str: string, arr: T): T =
   for i in 0 .. arr.high:
@@ -16,19 +16,22 @@ const
   srcDir = "src"
   tmpDir = "tmp"
   binDir = "bin"
+  nginxDir = "/var/www/rog-ubuntu"
   defaultFlags = "--threads:on --mm:orc"
   releaseFlags = "-d:release"
   debugFlags = ""
   tailwindExe = "./tailwindcss"
   tailwindDebugFlags = ""
   tailwindReleaseFlags = "--minify"
-
-let
-  files = ["server/web_socket_server"]
+  serverDir = "server"
+  serverBin = binDir / "web_socket_server"
+  serverBinDir = binDir / serverDir
+  
+  files = ["web_socket_server"]
   htmlFiles = [""]
-  cssFiles = [""]
-  karaxFiles = ["server/filler"]
-  nimJSFiles = ["server/filler"]
+  cssFiles = [serverDir / "filler"]
+  karaxFiles = [serverDir / "filler"]
+  nimJSFiles = [serverDir / "filler"]
 
 proc src(file: string, ext: string = ""): string {.inline.} =
   result = srcDir / (file & ext)
@@ -70,15 +73,15 @@ template genericBuild(debug: bool = true) =
   
   for file in cssFiles:
     createDir(file.bin.parentDir)
-    if file != "" and needsRefresh(file.bin, file.src(".css")):
-      discard direShell(tailwindExe, "-i", file.src(".css"), "-o" & file.bin, tailwindFlags)
+    if file != "" and needsRefresh(file.bin(".css"), file.src(".css")):
+      discard direShell(tailwindExe, "-i", file.src(".css"), "-o", file.bin(".css"), tailwindFlags)
 
   for file in nimJSFiles:
     createDir(file.bin.parentDir)
     if file != "" and needsRefresh(file.bin(".js"), file.src(".nim")):
       discard direShell(nimExe, "js", "-o:" & file.bin(".js"), file.src(".nim"))
 
-
+# Build
 task "release-build", "Builds everything with release flags":
   genericBuild(debug = false)
 
@@ -91,10 +94,28 @@ task "debug-build", "Builds everything with debug flags":
 task "build", "Runs debug-build":
   runTask("debug-build")
 
+# Clean
 task "clean", "Deletes bin and tmp folders":
   removeDir(tmpDir)
   removeDir(binDir)
-  
+
+# Serve
+task "debug-serve", "Builds the server in debug mode and copies the files for nginx":
+  runTask("debug-build")
+  let password = readPasswordFromStdin()
+  for file in walkDir(serverBinDir, relative = true):
+    discard direShell("echo", password, "| sudo -S", "cp -R", getCurrentDir() / serverBinDir / file.path, nginxDir / file.path)
+
+task "release-serve", "Builds the server in debug mode and copies the files for nginx":
+  runTask("release-build")
+  let password = readPasswordFromStdin()
+  for file in walkDir(serverBinDir, relative = true):
+    discard direShell("echo", password, "| sudo -S", "cp -R", getCurrentDir() / serverBinDir / file.path, nginxDir / file.path)
+
+task "serve", "Builds the server and copies the files for nginx":
+  runTask("debug-serve")
+
+# Default
 task defaultTask, "Default task, runs debug build":
   runTask("debug-build")
-  
+

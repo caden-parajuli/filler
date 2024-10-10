@@ -1,0 +1,19 @@
+{ 
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "Board",
+    "type": "object",
+    "properties": {
+        "isDiamonds": "boolean",
+        "numRows": "number",
+        "numCols": {
+            "description": "The number of columns in the first row"
+        },
+        "grid": {
+            "type": "array", 
+            "items": {
+                "type": "array",
+                "items": "integer"
+            }
+        }
+    }
+}

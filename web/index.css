@@ -1,0 +1,84 @@
+:root {
+  --square-size: 24px;
+  --space-between: 5.5px;
+  --shift-up: -21.0px;
+  --left-space: 17.5px;
+
+  /* Cyan */
+  --color0: #00dddd;
+  /* Green */
+  --color1: #228b22;
+  /* Red */
+  --color2: #8b0000;
+  /* Yellow */
+  --color3: #ffd700;
+  /* Blue */
+  --color4: #4444dd;
+  /* Pink */
+  --color5: #dd00dd;
+  /* Orange */
+  --color6: #ff6347;
+}
+
+body {
+  background-color: #444;
+}
+
+.on-row {
+  margin-top: var(--shift-up);
+}
+
+.off-row {
+  margin-left: var(--left-space);
+  margin-top: var(--shift-up);
+}
+
+.diamond {
+  height: var(--square-size);
+  width: var(--square-size);
+  transform: rotate(45deg);
+  display: inline-block;
+  margin: var(--space-between);
+}
+
+/* Cyan */
+.color0 {
+  background-color: var(--color0);
+  color: var(--color0);
+}
+
+/* Green */
+.color1 {
+  background-color: var(--color1);
+  color: var(--color1);
+}
+
+/* Red */
+.color2 {
+  background-color: var(--color2);
+  color: var(--color2);
+}
+
+/* Yellow */
+.color3 {
+  background-color: var(--color3);
+  color: var(--color3);
+}
+
+/* Blue */
+.color4 {
+  background-color: var(--color4);
+  color: var(--color4);
+}
+
+/* Pink */
+.color5 {
+  background-color: var(--color5);
+  color: var(--color5);
+}
+
+/* Orange */
+.color6 {
+  background-color: var(--color6);
+  color: var(--color6);
+}

@@ -9,6 +9,6 @@ CREATE TABLE IF NOT EXISTS games (
   id INTEGER PRIMARY KEY,
   player1Id TEXT,
   player2Id TEXT,
-  board BLOB,
+  board TEXT,
   turn TEXT
 );

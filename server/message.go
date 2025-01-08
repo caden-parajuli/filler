@@ -13,16 +13,22 @@ const (
 	GAME_PARAMS_RESP
 	MOVE_MESSAGE
 	CLIENT_MOVE_MESSAGE
+	JOIN_GAME_REQ
+	JOIN_GAME_RESP
+	OTHER_CLIENT_JOIN
 
 	ID_MESSAGE_STR          string = "id_message"
 	GAME_PARAMS_REQ_STR     string = "game_params_req"
 	GAME_PARAMS_RESP_STR    string = "game_params_resp"
 	MOVE_MESSAGE_STR        string = "move_message"
 	CLIENT_MOVE_MESSAGE_STR string = "client_move_message"
+	JOIN_GAME_REQ_STR       string = "join_game_req"
+	JOIN_GAME_RESP_STR      string = "join_game_resp"
+	OTHER_CLIENT_JOIN_STR   string = "other_client_join"
 )
 
 type MessageRaw = struct {
-	MessageType string `json:"message_type"`
+	MessageType string          `json:"message_type"`
 	Message     json.RawMessage `json:"message"`
 }
 
@@ -32,10 +38,10 @@ type IdMessage = struct {
 
 type GameParamsReq = struct {
 	Id         string `json:"id"`
-	IsDiamonds bool `json:"is_diamonds"`
-	NumRows    uint `json:"num_rows"`
-	NumCols    uint `json:"num_cols"`
-	NumColors  uint `json:"num_colors"`
+	IsDiamonds bool   `json:"is_diamonds"`
+	NumRows    uint   `json:"num_rows"`
+	NumCols    uint   `json:"num_cols"`
+	NumColors  uint   `json:"num_colors"`
 }
 
 type GameParamsResp = struct {
@@ -45,12 +51,28 @@ type GameParamsResp = struct {
 
 type MoveMessage = struct {
 	Board  *Board `json:"board"`
-	MyTurn bool `json:"my_turn"`
+	MyTurn bool   `json:"my_turn"`
 }
 
 type ClientMoveMessage = struct {
 	Id    string `json:"id"`
-	Color uint `json:"color"`
+	Color uint   `json:"color"`
+}
+
+type JoinGameReq = struct {
+	Id     string `json:"id"`
+	GameId uint64 `json:"game_id"`
+}
+
+type JoinGameResp = struct {
+	Success   bool   `json:"success"`
+	PlayerNum uint   `json:"player_num"` // 0 or 1. determines their board side
+	Board     *Board `json:"board"`
+	MyTurn    bool   `json:"my_turn"`
+}
+
+type OtherClientJoin = struct {
+	MyTurn bool `json:"my_turn"`
 }
 
 // Returns the message type and the raw message inside
@@ -63,16 +85,22 @@ func Preprocess(message []byte) (MsgType, json.RawMessage) {
 
 	var msgType MsgType
 	switch msgStruct.MessageType {
-	case "id_message":
+	case ID_MESSAGE_STR:
 		msgType = ID_MESSAGE
-	case "game_params_req":
+	case GAME_PARAMS_REQ_STR:
 		msgType = GAME_PARAMS_REQ
-	case "game_params_resp":
+	case GAME_PARAMS_RESP_STR:
 		msgType = GAME_PARAMS_RESP
-	case "move_message":
+	case MOVE_MESSAGE_STR:
 		msgType = MOVE_MESSAGE
-	case "client_move_message":
+	case CLIENT_MOVE_MESSAGE_STR:
 		msgType = CLIENT_MOVE_MESSAGE
+	case JOIN_GAME_REQ_STR:
+		msgType = JOIN_GAME_REQ
+	case JOIN_GAME_RESP_STR:
+		msgType = JOIN_GAME_RESP
+	case OTHER_CLIENT_JOIN_STR:
+		msgType = OTHER_CLIENT_JOIN
 	default:
 		log.Println("JSON parsing: ERROR invalid message type")
 	}
@@ -118,8 +146,39 @@ func NewMessageMoveMessage(board *Board, myTurn bool) MessageRaw {
 		log.Println("Marshal: ", err)
 	}
 	message := MessageRaw{
-		GAME_PARAMS_RESP_STR,
+		MOVE_MESSAGE_STR,
 		json.RawMessage(gameParamsResp),
+	}
+	return message
+}
+
+func NewMessageJoinGameResp(success bool, playerNum uint, board *Board, myTurn bool) MessageRaw {
+	joinGameResp, err := json.Marshal(JoinGameResp{
+		success,
+		playerNum,
+		board,
+		myTurn,
+	})
+	if err != nil {
+		log.Println("Marshal: ", err)
+	}
+	message := MessageRaw{
+		JOIN_GAME_RESP_STR,
+		json.RawMessage(joinGameResp),
+	}
+	return message
+}
+
+func NewMessageOtherClientJoin(myTurn bool) MessageRaw {
+	otherClientJoin, err := json.Marshal(OtherClientJoin{
+		myTurn,
+	})
+	if err != nil {
+		log.Println("Marshal: ", err)
+	}
+	message := MessageRaw{
+		OTHER_CLIENT_JOIN_STR,
+		json.RawMessage(otherClientJoin),
 	}
 	return message
 }

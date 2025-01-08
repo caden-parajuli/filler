@@ -9,9 +9,9 @@ import (
 type Color uint
 
 type Board struct {
-	Diamonds bool `json:"diamonds"`
-	NumRows uint `json:"num_rows"`
-	NumCols uint `json:"num_cols"`
+	Diamonds bool      `json:"diamonds"`
+	NumRows  uint      `json:"num_rows"`
+	NumCols  uint      `json:"num_cols"`
 	Data     [][]Color `json:"data"`
 }
 
@@ -21,7 +21,7 @@ const (
 )
 
 // Generates a board of diamonds
-func CreateDiamondBoard(num_colors uint, num_rows uint, num_cols uint) Board {
+func CreateDiamondBoard(num_colors uint, num_rows uint, num_cols uint) *Board {
 	board := make([][]Color, num_rows)
 	for i := 0; uint(i) < (num_rows-1)/2; i++ {
 		// Non-offset rows
@@ -36,12 +36,14 @@ func CreateDiamondBoard(num_colors uint, num_rows uint, num_cols uint) Board {
 			board[2*i+1][j] = Color(rand.Intn(int(num_colors)))
 		}
 	}
+
 	// Last row
+	board[num_rows-1] = make([]Color, num_cols)
 
 	// Players must have different colors
 	top_player_color := board[0][num_cols-1]
 	bot_player_color := Color(rand.Intn(int(num_colors - 1)))
-	if bot_player_color > top_player_color {
+	if bot_player_color == top_player_color {
 		board[num_rows-1][0] = bot_player_color + Color(1)
 	} else {
 		board[num_rows-1][0] = bot_player_color
@@ -51,7 +53,7 @@ func CreateDiamondBoard(num_colors uint, num_rows uint, num_cols uint) Board {
 		board[num_rows-1][j] = Color(rand.Intn(int(num_colors)))
 	}
 
-	return Board{true, num_rows, num_cols, board}
+	return &Board{true, num_rows, num_cols, board}
 }
 
 // Gets neighbors of a given position on a diamond board

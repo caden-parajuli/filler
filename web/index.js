@@ -1,12 +1,26 @@
-import { makeRandomGrid } from "./modules/board.mjs";
+import { makeEmptyGrid } from "./modules/board.mjs";
 import { initControls } from "./modules/controls.mjs";
-import { connect, WS_SERVER_ADDRESS } from "./modules/socket.mjs"; 
+import { connect, joinGame, requestGame, WS_SERVER_ADDRESS } from "./modules/socket.mjs";
+import { hideHome, showWaitingRoom } from "./modules/room.mjs"
 
-
-function main() {
-  document.addEventListener("DOMContentLoaded", makeRandomGrid, false);
-  document.addEventListener("DOMContentLoaded", initControls, false);
-  document.addEventListener("DOMContentLoaded", () => connect(WS_SERVER_ADDRESS), false);
+function host() {
+    hideHome();
+    showWaitingRoom();
+    requestGame();
+}
+function join() {
+    let input = /** @type {HTMLInputElement} */ (document.getElementById("join-game-id")).value;
+    let game_id = parseInt(input);
+    joinGame(game_id);
 }
 
-main();
+document.getElementById("host-button").addEventListener("click", host)
+document.getElementById("join-button").addEventListener("click", join)
+
+function main() {
+    makeEmptyGrid();
+    initControls();
+    connect(WS_SERVER_ADDRESS);
+}
+
+document.addEventListener("DOMContentLoaded", main, false);

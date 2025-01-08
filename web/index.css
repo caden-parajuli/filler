@@ -86,3 +86,9 @@ body {
   background-color: var(--color6);
   color: var(--color6);
 }
+
+/* UNASSIGNED */
+.unassigned {
+  background-color: var(--background);
+  color: var(--background);
+}

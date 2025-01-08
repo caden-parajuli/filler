@@ -48,6 +48,14 @@ func (client *Client) handleTextMessage(message []byte) {
 		}
 
 		client.handleClientMoveMessage(clientMoveMessage)
+	case JOIN_GAME_REQ:
+	    var joinGameReq JoinGameReq
+		err := json.Unmarshal(msgJSON, &joinGameReq)
+		if err != nil {
+			log.Println("Unmarshal: ", err)
+		}
+
+		client.handleJoinGameReq(joinGameReq)
 
 	default:
 		if client != nil {
@@ -67,14 +75,22 @@ func (client *Client) handleIdMessage(idMessage IdMessage) {
 	idResponse := NewMessageIdMessage(client.id)
 	client.write(idResponse)
 
-	// If the client is in a game, we send them the board
+	// If the client is in a game, we send them a JoinGameResp
 	if client.game != 0 {
-		board, _, _, turnPlayerId := GetBoard(client.game)
+		board, player1, player2, turnPlayerId := GetBoard(client.game)
 		myTurn := turnPlayerId == client.id
 
-		// TODO will need to send whether the player is player 1 or 2
-		moveResponse := NewMessageMoveMessage(board, myTurn)
-		client.out <- moveResponse
+		var playerNum uint
+		if client.id == player1 {
+			playerNum = 0
+		} else if client.id == player2 {
+			playerNum = 1
+		} else {
+			log.Fatal("Got board for client that isn't in game")
+		}
+
+		joinResponse := NewMessageJoinGameResp(true, playerNum, board, myTurn)
+		client.write(joinResponse)
 	}
 }
 
@@ -119,7 +135,7 @@ func (client *Client) handleClientMoveMessage(clientMoveMessage ClientMoveMessag
 	}
 	if client.id != turn {
 		// Ignore the move since it's not their turn
-		// TODO Maybe we should synchronize by sending the board again here
+		// TODO Maybe we should synchronize by sending a JoinGameReq here
 		return
 	}
 
@@ -139,3 +155,25 @@ func (client *Client) handleClientMoveMessage(clientMoveMessage ClientMoveMessag
 	clientsLock.RUnlock()
 	opponentClient.write(opponentMessage)
 }
+
+func (client *Client) handleJoinGameReq(joinGameReq JoinGameReq) {
+	if !client.isValid(joinGameReq.Id) {
+		return
+	}
+
+	success, board, opponent, turn := TryJoin(client.id, joinGameReq.GameId)
+	if success {
+		client.game = joinGameReq.GameId
+	}
+	response := NewMessageJoinGameResp(success, BOT_PLAYER, board, turn)
+	client.write(response)
+
+	// Notify the opponent that another client has joined their game
+
+	opponentMessage := NewMessageOtherClientJoin(!turn)
+	clientsLock.RLock()
+	opponentClient := clients[opponent]
+	clientsLock.RUnlock()
+	opponentClient.write(opponentMessage)
+}
+

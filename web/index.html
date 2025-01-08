@@ -9,7 +9,18 @@
     <script type="module" src="index.js"></script>
   </head>
   <body>
-    <div id="game">
+    <div id="home">
+      <button id="host-button">Create Game</button>
+      <br>
+      <form id="join-form" action="javascript:void(0);">
+          <input type="text" id="join-game-id" name="join-game-id"></input>
+          <button id="join-button">Join Game</button>
+      </form>
+    </div>
+    <div id="waiting-room" style="display:none;">
+      <h3 id="game-id-display" style="display:none;"></h3>
+    </div>
+    <div id="game" style="display:none;">
       <div id="grid"></div>
       <br />
       <div id="controls">

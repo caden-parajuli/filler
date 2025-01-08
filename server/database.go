@@ -5,6 +5,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"sync"
 
@@ -67,8 +68,11 @@ func GetBoard(gameId uint64) (board *Board, player1Id, player2Id, turnPlayerId s
 	}
 	var boardEncoded string
 	row := db.QueryRow(`SELECT player1Id, player2Id, board, turn FROM games WHERE id = ?;`, gameId)
-	err := row.Scan(&boardEncoded, &player1Id, &player2Id, &turnPlayerId)
+	err := row.Scan(&player1Id, &player2Id, &boardEncoded, &turnPlayerId)
 	if err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Print("GetBoard: ", err)
+		}
 		return nil, "", "", ""
 	}
 
@@ -104,7 +108,7 @@ func NewGame(params GameParamsReq) (gameId uint64, board *Board, err error) {
 		return NO_GAME, nil, errors.ErrUnsupported
 	}
 
-	*board = CreateDiamondBoard(params.NumColors, params.NumRows, params.NumCols)
+	board = CreateDiamondBoard(params.NumColors, params.NumRows, params.NumCols)
 	boardEncoded := board.Encode()
 
 	tx, err := db.Begin()
@@ -112,7 +116,7 @@ func NewGame(params GameParamsReq) (gameId uint64, board *Board, err error) {
 		log.Println("Transaction: ", err)
 	}
 
-	row := tx.QueryRow("INSERT INTO games values(?, '', ?, ?) RETURNING id;", params.Id, boardEncoded, params.Id)
+	row := tx.QueryRow("INSERT INTO games (player1Id, player2Id, board, turn) values(?, '', ?, ?) RETURNING id;", params.Id, boardEncoded, params.Id)
 	err = row.Scan(&gameId)
 	if err != nil {
 		tx.Rollback()
@@ -124,4 +128,51 @@ func NewGame(params GameParamsReq) (gameId uint64, board *Board, err error) {
 	tx.Commit()
 
 	return gameId, board, nil
+}
+
+func TryJoin(id string, gameId uint64) (success bool, board *Board, opponent string, myTurn bool) {
+	if gameId == NO_GAME {
+		log.Println("Tried to join null game")
+		return false, nil, "", false
+	}
+
+	var boardEncoded string
+	var player1Id string
+	var player2Id string
+	var turnPlayerId string
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Println("Transaction: ", err)
+	}
+
+	row := tx.QueryRow(`SELECT player1Id, player2Id, board, turn FROM games WHERE id = ?;`, gameId)
+	err = row.Scan(&player1Id, &player2Id, &boardEncoded, &turnPlayerId)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			fmt.Print("GetBoard: ", err)
+		}
+		return false, nil, "", false
+	}
+
+	var turn bool
+	if turnPlayerId == "" {
+		_, err = tx.Exec(`UPDATE games SET player2Id = ?, turn = ? WHERE id = ?`, id, id, gameId)
+		turn = true
+	} else {
+		_, err = tx.Exec(`UPDATE games SET player2Id = ? WHERE id = ?`, id, gameId)
+		turn = false
+	}
+	if err != nil {
+		log.Print("TryJoin: ", err)
+		err = tx.Rollback()
+		if err != nil {
+			log.Print("TryJoin Rollback: ", err)
+		}
+	}
+	tx.Commit()
+
+	boardDecoded := Decode(boardEncoded)
+
+	return true, &boardDecoded, player1Id, turn
 }

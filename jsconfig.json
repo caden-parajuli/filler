@@ -6,5 +6,7 @@
         "checkJs": true,
         "resolveJsonModule": true
     },
+    "include": [
+        "web/**/*.js"
+    ]
 }
-

@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS players;
+CREATE TABLE IF NOT EXISTS players (
+  id TEXT PRIMARY KEY,
+  gameId INTEGER
+) WITHOUT ROWID;
+
+DROP TABLE IF EXISTS games;
+CREATE TABLE IF NOT EXISTS games (
+  id INTEGER PRIMARY KEY,
+  player1Id TEXT,
+  player2Id TEXT,
+  board BLOB,
+  turn TEXT
+);

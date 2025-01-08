@@ -1,27 +1,31 @@
 :root {
   --square-size: 24px;
   --space-between: 5.5px;
-  --shift-up: -21.0px;
+  --shift-up: -21px;
   --left-space: 17.5px;
 
-  /* Cyan */
-  --color0: #00dddd;
-  /* Green */
-  --color1: #228b22;
-  /* Red */
-  --color2: #8b0000;
-  /* Yellow */
-  --color3: #ffd700;
-  /* Blue */
-  --color4: #4444dd;
-  /* Pink */
-  --color5: #dd00dd;
-  /* Orange */
-  --color6: #ff6347;
+  --cyan: #00bfff;
+  --green: #32cd32;
+  --red: #f04000;
+  --yellow: #ffd700;
+  --blue: #4979c4;
+  --pink: #ff69b4;
+  --orange: #ff9000;
+
+  --color0: var(--cyan);
+  --color1: var(--green);
+  --color2: var(--red);
+  --color3: var(--yellow);
+  --color4: var(--blue);
+  --color5: var(--pink);
+  --color6: var(--orange);
+
+  --background: #606060;
+
 }
 
 body {
-  background-color: #444;
+  background-color: var(--background);
 }
 
 .on-row {

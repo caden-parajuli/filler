@@ -23,8 +23,12 @@
 
             go
             gopls
+            gcc # for cgo
+
+            sqlite
           ];
           LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+          CGO_ENABLED = 1;
         };
       }
     );

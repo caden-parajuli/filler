@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 
-	"github.com/gorilla/websocket"
 	"net/http"
 
 	"database/sql"
@@ -16,9 +15,6 @@ var dbAddress = flag.String("dbaddr", "file:database/games.db", "Database addres
 var addr = flag.String("addr", "localhost:42069", "HTTP service address")
 
 var db *sql.DB
-var upgrader = websocket.Upgrader{
-	Subprotocols: []string{"JSON-v1"},
-}
 
 func main() {
 	flag.Parse()

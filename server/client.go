@@ -17,6 +17,9 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
+// Expected close codes
+var closeCodes = []int{websocket.CloseGoingAway, websocket.CloseNormalClosure}
+
 type Client struct {
 	// Websocket connection
 	conn *websocket.Conn
@@ -50,8 +53,17 @@ func (client *Client) readPump() {
 	for {
 		mtype, message, err := client.conn.ReadMessage()
 		if err != nil {
-			log.Print("websocket read: ", err)
-			break
+			if websocket.IsCloseError(err, closeCodes...) {
+				log.Println("Received close message",)
+			} else {
+				log.Print("websocket read: ", err)
+			}
+
+			// Maybe close channel?
+			clientsLock.Lock()
+			delete(clients, client.id)
+			clientsLock.Unlock()
+			return
 		}
 
 		log.Printf("received (%d): %s", mtype, message)
@@ -65,7 +77,6 @@ func (client *Client) readPump() {
 		default:
 			log.Println("WARNING: Bad message type")
 		}
-
 	}
 }
 
@@ -80,7 +91,7 @@ func (client *Client) writePump() {
 		case message, ok := <-client.out:
 			client.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
-				// The channel has been closed
+				log.Println("Client channel closed")
 				client.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
@@ -97,7 +108,7 @@ func (client *Client) writePump() {
 				return
 			}
 			w.Write(messageStr)
-		    log.Printf("sent: %s", messageStr)
+			log.Printf("sent: %s", messageStr)
 
 			if err := w.Close(); err != nil {
 				return
@@ -115,8 +126,21 @@ func (client *Client) write(message MessageRaw) {
 	client.out <- message
 }
 
+func TryWrite(id string, message MessageRaw) bool {
+	clientsLock.RLock()
+	client := clients[id]
+	clientsLock.RUnlock()
+
+	if client == nil {
+		return false
+	}
+	client.write(message)
+	return true
+}
+
 func (client *Client) Close() {
-	client.conn.Close()
+	log.Print("Closing client")
+	close(client.out)
 
 	clientsLock.Lock()
 	delete(clients, client.id)
@@ -132,4 +156,3 @@ func (client *Client) isValid(id string) bool {
 	}
 	return true
 }
-

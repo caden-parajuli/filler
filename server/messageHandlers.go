@@ -49,7 +49,7 @@ func (client *Client) handleTextMessage(message []byte) {
 
 		client.handleClientMoveMessage(clientMoveMessage)
 	case JOIN_GAME_REQ:
-	    var joinGameReq JoinGameReq
+		var joinGameReq JoinGameReq
 		err := json.Unmarshal(msgJSON, &joinGameReq)
 		if err != nil {
 			log.Println("Unmarshal: ", err)
@@ -76,21 +76,32 @@ func (client *Client) handleIdMessage(idMessage IdMessage) {
 	client.write(idResponse)
 
 	// If the client is in a game, we send them a JoinGameResp
+	// or a GameParamsResp, depending on whether they have an opponent yet
+	// TODO we must check if there is a
 	if client.game != 0 {
 		board, player1, player2, turnPlayerId := GetBoard(client.game)
 		myTurn := turnPlayerId == client.id
 
 		var playerNum uint
+		var opponent string
 		if client.id == player1 {
 			playerNum = 0
+			opponent = player2
 		} else if client.id == player2 {
 			playerNum = 1
+			opponent = player1
 		} else {
 			log.Fatal("Got board for client that isn't in game")
 		}
 
-		joinResponse := NewMessageJoinGameResp(true, playerNum, board, myTurn)
-		client.write(joinResponse)
+		// If there is no opponent yet, we send a GameParamsResp
+		if opponent == "" {
+			inGameMessage := NewMessageGameParamsResp(board, client.game)
+			client.write(inGameMessage)
+		} else {
+			inGameMessage := NewMessageJoinGameResp(true, playerNum, board, myTurn)
+			client.write(inGameMessage)
+		}
 	}
 }
 
@@ -135,7 +146,7 @@ func (client *Client) handleClientMoveMessage(clientMoveMessage ClientMoveMessag
 	}
 	if client.id != turn {
 		// Ignore the move since it's not their turn
-		// TODO Maybe we should synchronize by sending a JoinGameReq here
+		// TODO Maybe we should synchronize by sending a JoinGameResp here
 		return
 	}
 
@@ -150,10 +161,7 @@ func (client *Client) handleClientMoveMessage(clientMoveMessage ClientMoveMessag
 
 	// Send move to their opponent, it is now their turn
 	opponentMessage := NewMessageMoveMessage(board, true)
-	clientsLock.RLock()
-	opponentClient := clients[opponent]
-	clientsLock.RUnlock()
-	opponentClient.write(opponentMessage)
+	TryWrite(opponent, opponentMessage)
 }
 
 func (client *Client) handleJoinGameReq(joinGameReq JoinGameReq) {
@@ -169,11 +177,6 @@ func (client *Client) handleJoinGameReq(joinGameReq JoinGameReq) {
 	client.write(response)
 
 	// Notify the opponent that another client has joined their game
-
 	opponentMessage := NewMessageOtherClientJoin(!turn)
-	clientsLock.RLock()
-	opponentClient := clients[opponent]
-	clientsLock.RUnlock()
-	opponentClient.write(opponentMessage)
+	TryWrite(opponent, opponentMessage)
 }
-

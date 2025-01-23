@@ -20,6 +20,7 @@
             prettierd
             typescript
             nodejs_22
+            esbuild
 
             go
             gopls

@@ -68,3 +68,9 @@ nginx.pid
 
 # Databases
 *.db
+
+# JS
+dist/
+
+# Esbuild script binary
+esbuild

@@ -12,9 +12,10 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
 
-// maps Client IDs to Client structs. Needed to map opponent IDs to connections
-var clients = map[string]*Client{}
+// map Client IDs to Client structs. Needed to determine
+// the connection corresponding to a players opponent
 var clientsLock = sync.RWMutex{}
+var clients = map[string]*Client{}
 
 // Creates a new client and updates database accordingly
 // if the id given is not already present

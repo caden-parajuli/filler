@@ -68,3 +68,6 @@ nginx.pid
 
 # Databases
 *.db
+
+# JS
+dist/

@@ -1,16 +1,23 @@
+SERVER_DIR=server
+WEB_DIR=web
+DIST_DIR=$(WEB_DIR)/dist
+DATABASE=server/database/games.db
+
 all:
+	esbuild $(WEB_DIR)/index.js --outdir=$(DIST_DIR) --bundle --minify --sourcemap 
 
-deploy: all
-	cp -r web/. /var/www/
-
-run: deploy
+deploy_web: all 
 ifneq ($(shell id -u), 0)
-	@echo "You must be root to run the server"
+	($error You must be root to deploy)
+	exit 1
 else
-	nginx -p $$PWD -e stderr -c nginx.conf & cd server && go run *.go; pkill nginx
+	cp -r web/. /var/www/
 endif
 
-drop_database:
-	sqlite3 server/database/games.db < server/database/create-tables.sql
+run: deploy_web
+	nginx -p $$PWD -e stderr -c nginx.conf & cd $(SERVER_DIR) && go run *.go; pkill nginx
 
-.PHONY: all deploy run
+drop_database:
+	sqlite3 $(DATABASE) < server/database/create-tables.sql
+
+.PHONY: all deploy_web run drop_database

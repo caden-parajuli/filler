@@ -71,3 +71,6 @@ nginx.pid
 
 # JS
 dist/
+
+# Esbuild script binary
+esbuild

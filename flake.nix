@@ -39,11 +39,36 @@
           CGO_ENABLED = 1;
         };
         packages = {
-          # backend = pkgs.stdenv.mkDerivation {
           backend = pkgs.buildGoModule {
             name = "backend";
             src = ./server;
             vendorHash = "sha256-QBWyMxEa/orGV5j8oFf6meY5pVYaOB3ym4GdNCEtWkU=";
+          };
+
+          esbuild-script = pkgs.buildGoModule {
+            name = "esbuild-script";
+            src = ./web/esbuild;
+            vendorHash = "sha256-uQuzfDwae3XK7QyrrrcR9cb/q8lcX3/+fcRFkaJ5PT4=";
+          };
+
+          frontend = pkgs.stdenv.mkDerivation {
+            name = "frontend";
+            src = ./web;
+            buildInputs = [ 
+              pkgs.go
+              self'.packages.esbuild-script
+            ];
+            buildPhase = ''
+              # see https://github.com/NixOS/nix/issues/670
+              export HOME=$(pwd)
+              make ESBUILD_SCRIPT=${self'.packages.esbuild-script}/bin/esbuild
+            '';
+            installPhase = ''
+              runHook preInstall
+              export HOME=$(pwd)
+              make install ESBUILD_SCRIPT=${self'.packages.esbuild-script}/bin/esbuild DEST_DIR=$out
+              runHook postInstall
+            '';
           };
         };
         process-compose."myservices" = {

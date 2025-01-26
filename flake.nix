@@ -55,7 +55,7 @@
           frontend = pkgs.stdenv.mkDerivation {
             name = "frontend";
             src = ./web;
-            buildInputs = [
+            buildInputs = [ 
               pkgs.go
               self'.packages.esbuild-script
             ];

@@ -62,8 +62,12 @@ app.*.map.json
 go.work
 go.work.sum
 **/vendor
+<<<<<<< HEAD
 server
 !server/
+=======
+server/server
+>>>>>>> 5b47e8c (Add backend Nix derivation)
 
 # NGINX
 tmp/

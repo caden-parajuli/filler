@@ -74,3 +74,4 @@ dist/
 
 # Esbuild script binary
 esbuild
+!esbuild/

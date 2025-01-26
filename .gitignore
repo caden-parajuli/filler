@@ -76,6 +76,7 @@ dist/
 
 # Esbuild script binary
 esbuild
+!esbuild/
 
 # Nix build result
 /result

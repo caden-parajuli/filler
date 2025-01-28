@@ -62,7 +62,8 @@ app.*.map.json
 go.work
 go.work.sum
 **/vendor
-server/server
+server
+!server/
 
 # NGINX
 tmp/
@@ -78,5 +79,6 @@ dist/
 esbuild
 !esbuild/
 
-# Nix build result
+# Nix build artifacts
 /result
+/data/

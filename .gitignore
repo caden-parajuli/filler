@@ -82,3 +82,5 @@ esbuild
 # Nix build artifacts
 /result
 /data/
+/nginx_data/
+/database/

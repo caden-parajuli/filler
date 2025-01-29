@@ -16,7 +16,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// go:embed database/create-tables.sql
+//go:embed database/create-tables.sql
 var createTablesCommands string
 
 // TODO add config file support
@@ -62,11 +62,18 @@ func openDB() {
 		if err != nil {
 			log.Fatal("openDB sqlite3: ", err)
 		}
+		defer tx.Rollback()
 
 		_, err = tx.Exec(createTablesCommands)
 		if err != nil {
 			log.Fatal("Could not create tables: ", err)
 		}
+
+		if err = tx.Commit(); err != nil {
+			log.Fatal("Could not commit query to create tables: ", err)
+		}
+
+		log.Println("Finished with", createTablesCommands)
 
 		return
 	}
@@ -86,19 +93,18 @@ func createDBSQLite() {
 	filename := (*dbAddress)[5:]
 
 	// Create parent folder if necessary
-	err := os.MkdirAll(filepath.Dir(filename), 0664)
+	err := os.MkdirAll(filepath.Dir(filename), 0777)
 	if err != nil && !errors.Is(err, os.ErrExist) {
 		log.Fatal("Could not create SQLite database directory: ", err)
 	}
 
 	// Create the database file if it does not already exist
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_EXCL, 0664)
-	if err != nil && !errors.Is(err, os.ErrExist) {
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0777)
+	if err != nil {
 		log.Fatal("Could not create SQLite database: ", err)
 	}
-
 	err = file.Close()
 	if err != nil {
-		log.Println("Could not close SQLite database file: ", err) 
+		log.Println("Could not close SQLite database file: ", err)
 	}
 }

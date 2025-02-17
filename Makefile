@@ -23,7 +23,7 @@ $(SERVER_BINARY): $(wildcard $(SERVER_DIR)/*.go)
 
 
 test_run: deploy_web $(SERVER_BINARY)
-	nginx -p $$PWD -e stderr -c nginx.conf & cd $(SERVER_DIR) && ./$(SERVER_BINARY_NAME); pkill nginx
+	nginx -p $$PWD -e stderr -c nginx.conf & cd $(SERVER_DIR) && ./$(SERVER_BINARY_NAME) --drop-db; pkill nginx
 
 
 drop_database:

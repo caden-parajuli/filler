@@ -7,10 +7,53 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 	"sync"
 
 	gonanoid "github.com/matoous/go-nanoid/v2"
 )
+
+// Creates a SQLite database file
+func CreateFileSQLite() {
+	if (*dbAddress)[:5] != "file:" {
+		log.Fatal("Attempted to create database file for non-SQLite database")
+	}
+	filename := (*dbAddress)[5:]
+
+	// Create parent folder if necessary
+	err := os.MkdirAll(filepath.Dir(filename), 0777)
+	if err != nil && !errors.Is(err, os.ErrExist) {
+		log.Fatal("Could not create SQLite database directory: ", err)
+	}
+
+	// Create the database file if it does not already exist
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0777)
+	if err != nil {
+		log.Fatal("Could not create SQLite database: ", err)
+	}
+	err = file.Close()
+	if err != nil {
+		log.Println("Could not close SQLite database file: ", err)
+	}
+}
+
+// Drops tables from the database
+func DropTables(db *sql.DB) {
+	_, err := db.Exec(createTablesCommands)
+	if err != nil {
+		log.Fatal("Could not drop tables: ", err)
+	}
+
+	log.Println("Dropped database tables")
+}
+
+func CreateTablesSQLite(db *sql.DB) {
+	_, err := db.Exec(createTablesCommands)
+	if err != nil {
+		log.Fatal("Could not create tables: ", err)
+	}
+}
 
 // map Client IDs to Client structs. Needed to determine
 // the connection corresponding to a players opponent
@@ -53,7 +96,7 @@ func NewPlayer(client *Client, id string) {
 	clientsLock.Unlock()
 
 	// Insert into players table
-	_, err = db.Exec(`INSERT INTO players values(?, ?);`, client.id, client.game)
+	_, err = db.Exec(`INSERT INTO players VALUES(?, ?);`, client.id, client.game)
 	if err != nil {
 		log.Print("INSERT players: ", err)
 	}
@@ -61,7 +104,7 @@ func NewPlayer(client *Client, id string) {
 	return
 }
 
-// Reads board from database, players and whose turn it is
+// Reads board, players, and whose turn it is from database
 func GetBoard(gameId uint64) (board *Board, player1Id, player2Id, turnPlayerId string) {
 	if gameId == NO_GAME {
 		log.Println("Tried to get board for null game")
@@ -117,7 +160,7 @@ func NewGame(params GameParamsReq) (gameId uint64, board *Board, err error) {
 		log.Println("Transaction: ", err)
 	}
 
-	row := tx.QueryRow("INSERT INTO games (player1Id, player2Id, board, turn) values(?, '', ?, ?) RETURNING id;", params.Id, boardEncoded, params.Id)
+	row := tx.QueryRow("INSERT INTO games (player1Id, player2Id, board, turn) VALUES(?, '', ?, ?) RETURNING id;", params.Id, boardEncoded, params.Id)
 	err = row.Scan(&gameId)
 	if err != nil {
 		tx.Rollback()

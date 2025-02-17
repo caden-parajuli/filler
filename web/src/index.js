@@ -3,6 +3,8 @@ import { initControls } from "./modules/controls.mjs";
 import { connect, joinGame, requestGame, WS_SERVER_ADDRESS } from "./modules/socket.mjs";
 import { hideHome, showWaitingRoom } from "./modules/room.mjs"
 
+// I'm aware changing the display style is not the best way to implement multiple pages.
+// It works, and it's good enough for this.
 function host() {
     hideHome();
     showWaitingRoom();

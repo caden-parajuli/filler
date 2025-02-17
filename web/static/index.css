@@ -28,6 +28,20 @@ body {
   background-color: var(--background);
 }
 
+.viewport {
+   width: 100%;
+   height: auto;
+   aspect-ratio: 16 / 9;
+}
+
+.centered {
+  width:100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Game Colors  */
+
 .on-row {
   margin-top: var(--shift-up);
 }
@@ -87,9 +101,29 @@ body {
   color: var(--color6);
 }
 
-/* UNASSIGNED */
+/* UNASSIGNED color */
 .unassigned {
   background-color: var(--background);
   color: var(--background);
 }
 
+
+/* Controls */
+
+.control[disabled] {
+    pointer-events: none;
+    user-select: none;
+    filter: grayscale(75%);
+}
+
+
+/* Scoreboard */
+#scoreboard {
+  display: flex;
+  justify-content: space-around;
+}
+
+.right-score {
+  margin-left: auto; 
+  margin-right: 0;  
+}

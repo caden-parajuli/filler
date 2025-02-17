@@ -19,13 +19,16 @@
       ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { config, self', inputs', pkgs, system, ... }: {
+        # Development ppackages
         devShells.default =
           with pkgs;
           mkShell rec {
             nativeBuildInputs = [
               emmet-language-server
+              typescript-language-server
               prettierd
               typescript
+              nodejs
 
               gopls
               gcc # for cgo

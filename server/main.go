@@ -1,11 +1,8 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"log"
-	"os"
-	"path/filepath"
 
 	"net/http"
 
@@ -23,15 +20,17 @@ var createTablesCommands string
 
 var dbEngine = flag.String("dbengine", "sqlite3", "Database engine")
 var dbAddress = flag.String("dbaddr", "file:database/games.db", "Database address")
+var dropDb = flag.Bool("drop-db", false, "Useful for testing. WARNING: this will drop the entire database before running!")
 
-// Conveniently this port is not reserved
+// Conveniently port 42069 is not reserved
 var addr = flag.String("addr", "localhost:42069", "HTTP service address")
+
 
 var db *sql.DB
 
 func main() {
 	flag.Parse()
-	log.SetFlags(0)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	openDB()
 	defer db.Close()
@@ -50,7 +49,7 @@ func main() {
 
 func openDB() {
 	if *dbEngine == "sqlite3" {
-		createDBSQLite()
+		CreateFileSQLite()
 
 		var err error
 		db, err = sql.Open(*dbEngine, *dbAddress)
@@ -58,22 +57,11 @@ func openDB() {
 			log.Fatal(err)
 		}
 
-		tx, err := db.Begin()
-		if err != nil {
-			log.Fatal("openDB sqlite3: ", err)
+		if *dropDb {
+			DropTables(db)
 		}
-		defer tx.Rollback()
-
-		_, err = tx.Exec(createTablesCommands)
-		if err != nil {
-			log.Fatal("Could not create tables: ", err)
-		}
-
-		if err = tx.Commit(); err != nil {
-			log.Fatal("Could not commit query to create tables: ", err)
-		}
-
-		log.Println("Finished with", createTablesCommands)
+		CreateTablesSQLite(db)
+		log.Println("Finished creating tables")
 
 		return
 	}
@@ -82,29 +70,5 @@ func openDB() {
 	db, err = sql.Open(*dbEngine, *dbAddress)
 	if err != nil {
 		log.Fatal(err)
-	}
-}
-
-// Creates a SQLite database file
-func createDBSQLite() {
-	if (*dbAddress)[:5] != "file:" {
-		log.Fatal("Attempted to create database file for non-SQLite database")
-	}
-	filename := (*dbAddress)[5:]
-
-	// Create parent folder if necessary
-	err := os.MkdirAll(filepath.Dir(filename), 0777)
-	if err != nil && !errors.Is(err, os.ErrExist) {
-		log.Fatal("Could not create SQLite database directory: ", err)
-	}
-
-	// Create the database file if it does not already exist
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR, 0777)
-	if err != nil {
-		log.Fatal("Could not create SQLite database: ", err)
-	}
-	err = file.Close()
-	if err != nil {
-		log.Println("Could not close SQLite database file: ", err)
 	}
 }

@@ -6,27 +6,27 @@ import { hideHome, hideWaitingRoom, showGame, setGameId } from "./room.mjs"
 /**
  * @type {WebSocket}
  */
-export var ws
-export var id = ""
+export var ws;
+export var id = "";
 
-export const WS_SERVER_ADDRESS = "ws://localhost/ws/"
+export const WS_SERVER_ADDRESS = "ws://localhost/ws/";
 
-const ID_MESSAGE_STR = "id_message"
-const GAME_PARAMS_REQ_STR = "game_params_req"
-const GAME_PARAMS_RESP_STR = "game_params_resp"
-const MOVE_MESSAGE_STR = "move_message"
-const CLIENT_MOVE_MESSAGE_STR = "client_move_message"
-const JOIN_GAME_REQ_STR = "join_game_req"
-const JOIN_GAME_RESP_STR = "join_game_resp"
-const OTHER_CLIENT_JOIN_STR = "other_client_join"
+const ID_MESSAGE_STR = "id_message";
+const GAME_PARAMS_REQ_STR = "game_params_req";
+const GAME_PARAMS_RESP_STR = "game_params_resp";
+const MOVE_MESSAGE_STR = "move_message";
+const CLIENT_MOVE_MESSAGE_STR = "client_move_message";
+const JOIN_GAME_REQ_STR = "join_game_req";
+const JOIN_GAME_RESP_STR = "join_game_resp";
+const OTHER_CLIENT_JOIN_STR = "other_client_join";
 
 /**
  * @param {string} address - websocket server address to connect to
  */
 export function connect(address) {
-    ws = new WebSocket(address, "JSON-v1")
-    getId()
-    ws.onmessage = messageHandler
+    ws = new WebSocket(address, "JSON-v1");
+    getId();
+    ws.onmessage = messageHandler;
 
     // Send id upon connection
     ws.onopen = (_) => {
@@ -63,12 +63,12 @@ export function joinGame(game_id) {
     let join_game_req = {
         id,
         game_id
-    }
+    };
 
     ws.send(JSON.stringify({
         message_type: JOIN_GAME_REQ_STR,
         message: join_game_req
-    }))
+    }));
 }
 
 /**
@@ -80,7 +80,7 @@ export function sendMove(color) {
     let client_move_message = {
         id,
         color
-    }
+    };
 
     ws.send(JSON.stringify({
         message_type: CLIENT_MOVE_MESSAGE_STR,
@@ -92,9 +92,9 @@ export function sendMove(color) {
  * @param {MessageEvent} event - WebSocket message event
  */
 function messageHandler(event) {
-    console.log(event.data)
+    console.log(event.data);
     /** @type {Message} */
-    let message = JSON.parse(event.data)
+    let message = JSON.parse(event.data);
 
     // Call appropriate handler
     switch (message.message_type) {
@@ -106,14 +106,15 @@ function messageHandler(event) {
             break;
         case MOVE_MESSAGE_STR:
             handleMoveMessage(message.message);
-            break
+            break;
         case JOIN_GAME_RESP_STR:
             handleJoinGameResp(message.message);
+            break;
         case OTHER_CLIENT_JOIN_STR:
             handleOtherClientJoin(message.message);
+            break;
         default:
             console.log(`Received unsupported message from server: ${event.data}`)
-
     }
 }
 
@@ -148,7 +149,7 @@ function handleGameParamsResp(game_params_resp) {
  */
 function handleMoveMessage(move_message) {
     setBoard(move_message.board)
-    setTurn(true)
+    setTurn(move_message.my_turn)
 }
 
 /**

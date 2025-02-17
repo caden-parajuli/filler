@@ -17,20 +17,38 @@
           <button id="join-button">Join Game</button>
       </form>
     </div>
+    <!-- I'm aware changing the display style is not the best way to implement multiple pages. -->
+    <!-- It works, and it's good enough for this. -->
     <div id="waiting-room" style="display:none;">
       <h3 id="game-id-display" style="display:none;"></h3>
     </div>
-    <div id="game" style="display:none;">
-      <div id="grid"></div>
-      <br />
-      <div id="controls">
-        <div id="diamond-control0" class="control diamond color0" data-color="color0"></div>
-        <div id="diamond-control1" class="control diamond color1" data-color="color1"></div>
-        <div id="diamond-control2" class="control diamond color2" data-color="color2"></div>
-        <div id="diamond-control3" class="control diamond color3" data-color="color3"></div>
-        <div id="diamond-control4" class="control diamond color4" data-color="color4"></div>
-        <div id="diamond-control5" class="control diamond color5" data-color="color5"></div>
-        <div id="diamond-control6" class="control diamond color6" data-color="color6"></div>
+    <div class="viewport">
+      <div class="centered">
+        <div id="game" style="display:none;">
+
+          <div id="scoreboard">
+            <div id="score left-score">
+                <p id="left-score-num" class="score-num"></p>
+            </div>
+            <div id="score right-score">
+                <p id="right-score-num" class="score-num"></p>
+            </div>
+          </div>
+
+          <div id="grid"></div>
+          <br />
+
+          <div id="controls" class="centered">
+            <div id="diamond-control0" class="control diamond color0" data-color="color0"></div>
+            <div id="diamond-control1" class="control diamond color1" data-color="color1"></div>
+            <div id="diamond-control2" class="control diamond color2" data-color="color2"></div>
+            <div id="diamond-control3" class="control diamond color3" data-color="color3"></div>
+            <div id="diamond-control4" class="control diamond color4" data-color="color4"></div>
+            <div id="diamond-control5" class="control diamond color5" data-color="color5"></div>
+            <div id="diamond-control6" class="control diamond color6" data-color="color6"></div>
+          </div>
+
+        </div>
       </div>
     </div>
   </body>

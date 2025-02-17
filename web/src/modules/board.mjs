@@ -1,3 +1,5 @@
+import { updateScoreboard } from "./scoreboard.mjs"
+
 export const rowLen = 30;
 // Must be odd
 export const numRows = 15;
@@ -24,13 +26,32 @@ export var player_num = -1;
 export var board
 
 /** @type {string} */
-var player_color;
+export var player_color;
+/** @type {string} */
+export var op_color;
+
+/**
+ * @param {string | any[]} color
+ * @returns number
+ */
+function colorToNum(color) {
+    return color[color.length - 1];
+}
+
+/**
+ * @param {Board} newBoard
+ */
+export function setBoard(newBoard) {
+    board = newBoard;
+    updateDomForBoard();
+    updateScoreboard(board);
+}
 
 /**
  * @param {[number, number]} pos
  * @returns {[number, number][]} the neighbors of a diamond in the order [topLeft, topRight, bottomleft, bottomRight], whichever ones exist
  */
-function getNeighbors(pos) {
+export function getNeighbors(pos) {
     // Not exactly elegant, but it's good enough
     let i = pos[0];
     let j = pos[1];
@@ -77,20 +98,33 @@ function getDiamond(pos) {
     return document.querySelector(`[data-pos="${pos[0]},${pos[1]}"]`);
 }
 
+
 /**
- * Changes the player color.
+ * Changes the player color in the DOM.
  * Used to anticipate a move for responsiveness until the server responds.
  *
  * @param {[number, number]} start_pos - the position of the first square
  * @param {string} color - the color to change to, e.g "color1"
  */
 export function changePlayerColor(start_pos, color) {
-    let first_diamond = getDiamond(start_pos);
-    let before_color = first_diamond.dataset.color;
-    if (before_color == color) {
+    changePlayerColorBoard(start_pos, color);
+    updateDomForBoard();
+}
+
+
+/** 
+ * Changes the player color on the board (flood fill).
+ *
+ * @param {[number, number]} start_pos - the position of the first square
+ * @param {string} color - the color to change to, e.g "color1"
+ */
+export function changePlayerColorBoard(start_pos, color) {
+    let colorNum = colorToNum(color);
+    let before_color = board.data[start_pos[0]][start_pos[1]];
+    if (COLORS[before_color] == color) {
         return;
     }
-    changeSingleColor(first_diamond, color);
+    board.data[start_pos[0]][start_pos[1]] = colorNum;
 
     let to_visit = [start_pos];
     while (to_visit.length != 0) {
@@ -100,10 +134,9 @@ export function changePlayerColor(start_pos, color) {
         let neighbors = getNeighbors(pos);
         while (neighbors.length != 0) {
             let neighbor_pos = neighbors.pop();
-            let neighbor = getDiamond(neighbor_pos);
 
-            if (neighbor.dataset.color == before_color) {
-                changeSingleColor(neighbor, color);
+            if (board.data[neighbor_pos[0]][neighbor_pos[1]] == before_color) {
+                board.data[neighbor_pos[0]][neighbor_pos[1]] = colorNum;
                 to_visit.push(neighbor_pos);
             }
         }
@@ -111,10 +144,9 @@ export function changePlayerColor(start_pos, color) {
 }
 
 /**
- * @param {Board} newBoard
+ * Updates the DOM to match board
  */
-export function setBoard(newBoard) {
-    board = newBoard
+export function updateDomForBoard() {
     for (let i = 0; i < (board.num_rows - 1) / 2; ++i) {
         for (let j = 0; j < board.num_cols; ++j) {
             let diamond = getDiamond([2 * i, j]);
@@ -130,8 +162,12 @@ export function setBoard(newBoard) {
         changeSingleColor(diamond, COLORS[board.data[board.num_rows - 1][j]]);
     }
     player_color = getDiamond(player_positions[player_num]).dataset.color;
+    op_color = getDiamond(player_positions[1 - player_num]).dataset.color;
 }
 
+/**
+ * Creates a new grid in the DOM
+ */
 export function makeEmptyGrid() {
     let grid = document.getElementById("grid");
 
@@ -200,7 +236,6 @@ function setNewDiamond(diamond, row, col) {
 
     diamond.dataset.color = UNCOLORED;
     diamond.classList.add(UNCOLORED);
-
 }
 
 /**
@@ -208,4 +243,11 @@ function setNewDiamond(diamond, row, col) {
  */
 export function setPlayerNum(new_player_num) {
     player_num = new_player_num
+}
+
+/**
+ * @param {Board} board
+ */
+export function getSize(board) {
+    return (board.num_rows * board.num_cols) - (board.num_rows - 1) / 2
 }
